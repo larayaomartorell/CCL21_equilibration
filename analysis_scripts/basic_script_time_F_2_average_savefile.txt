@@ -1,0 +1,30 @@
+#x axis name
+set xlabel "Time (ps)"
+
+#y axis name
+set ylabel "Force in x (pN)"
+
+#legend on/off
+set key on
+
+# number of points in moving average
+n = 30
+
+array A[n]
+
+samples(x) = $0 > (n-1) ? n : int($0+1)
+mod(x) = int(x) % n
+avg_n(x) = (A[mod($0)+1]=x, (sum [i=1:samples($0)] A[i]) / samples($0))
+
+# the final plot command looks quite simple
+plot "../data/F_step_2.txt" u ($1*2/1000):($5) w l notitle, \
+     "../data/F_step_2.txt" u ($1*2/1000):(avg_n($5)) w l lc rgb "red" lw 3 title "Average\\_".n
+
+# save the time and running average
+set table "../data/time_averageF2.txt"
+    plot "../data/F_step_2.txt" u ($1*2/1000):(avg_n($5)) w table
+unset table
+
+
+
+	
